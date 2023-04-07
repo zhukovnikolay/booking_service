@@ -13,7 +13,7 @@ class HallAdmin(admin.ModelAdmin):
         'address',
         'capacity',
         'area',
-        'type',
         'price',
-        'vies_count',
+        'views_count',
     ]
+    filter_horizontal = ('type',)

@@ -19,7 +19,7 @@ class Hall(models.Model):
     address = models.TextField(null=False, blank=False)
     capacity = models.IntegerField(null=False, blank=False)
     area = models.IntegerField(null=False, blank=False)
-    type = models.ManyToManyField(HallType, on_delete=models.SET_NULL, null=True, related_name='hall_types')
+    type = models.ManyToManyField(HallType, related_name='hall_types')
     price = models.DecimalField(max_digits=50, decimal_places=2)
     views_count = models.IntegerField(default=0)
 
