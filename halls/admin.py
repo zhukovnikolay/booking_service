@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from halls.models import Hall
+from halls.models import Hall, HallType
 
 
 @admin.register(Hall)
@@ -15,5 +15,11 @@ class HallAdmin(admin.ModelAdmin):
         'area',
         'price',
         'views_count',
+        'is_moderated'
     ]
     filter_horizontal = ('type',)
+
+
+@admin.register(HallType)
+class HallTypeAdmin(admin.ModelAdmin):
+    list_display = ['type_name']
