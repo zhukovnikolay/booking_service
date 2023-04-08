@@ -144,3 +144,10 @@ STATICFILES_DIRS = [str(BASE_DIR / "static")]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+
+CSRF_TRUSTED_ORIGINS = ['https://booking-service.herokuapp.com']
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+
