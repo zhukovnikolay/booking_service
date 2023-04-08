@@ -23,7 +23,7 @@ APPS_DIR = BASE_DIR / "booking_service"
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=#==v+8pjjzc7723x6u8-)qc6wcrq49qa=@bniv$ifb1+ub-s+'
+SECRET_KEY = 'jiUW8RUNJ2ND-=1NJ8ND812-39Iv+8pjjzc7723x6u8-)qc6wcrq49qa=@bniv$ifb1+ub-s+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
