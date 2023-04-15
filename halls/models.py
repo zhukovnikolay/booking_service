@@ -1,17 +1,13 @@
 from django.db import models
+from djongo import models as mongo_model
 
 
 class HallType(models.Model):
-    """
-    reference book stored hall types
-    """
-    type_name = models.CharField(max_length=160)
+    type_names = models.CharField(max_length=120)
 
-    def __repr__(self):
-        return self.type_name
-
-    def __str__(self):
-        return self.type_name
+    class Meta:
+        app_label = 'halls'
+        managed = True
 
 
 class Hall(models.Model):
@@ -19,22 +15,27 @@ class Hall(models.Model):
     model represented hall
     """
     name = models.CharField(max_length=160, null=False)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
     descriptions = models.TextField()
-    address = models.TextField(null=False, blank=False)
-    capacity = models.IntegerField(null=False, blank=False)
-    area = models.IntegerField(null=False, blank=False)
-    type = models.ManyToManyField(HallType, related_name='hall_types')
-    price = models.DecimalField(max_digits=50, decimal_places=2)
-    views_count = models.IntegerField(default=0)
-    is_moderated = models.BooleanField(default=False)
+    hall_type = models.ForeignKey(HallType, related_name='halls', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __repr__(self):
         return self.name
 
-    def increment_views_count(self):
-        self.name += 1
-        self.save()
+    class Meta:
+        app_label = 'halls'
+        managed = True
 
+
+class HallPropertyConferenceRoomMongoDB(mongo_model.Model):
+    """
+    model represented properties of conference room
+    """
+    hall_id = mongo_model.IntegerField()
+    projector = mongo_model.BooleanField(default=False)
+    whiteboard = mongo_model.BooleanField(default=False)
+    speaker_system = mongo_model.BooleanField(default=False)
+
+    class Meta:
+        app_label = 'properties'
+        db_table = 'halls_hallpropertyconferenceroommongodb'
 
