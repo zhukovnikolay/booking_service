@@ -5,6 +5,7 @@ set -o pipefail
 set -o nounset
 
 
+#python manage.py makemigrations
 python manage.py migrate
 # exec uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'
 exec gunicorn booking_service.wsgi:application  -w 2 -b :8000

@@ -2,7 +2,8 @@ version: '3'
 
 volumes:
   booking_service_local_postgres_data: {}
-  booking_service_local_postgres_data_backups: {}
+#  booking_service_local_postgres_data_backups: {}
+  booking_service_local_mongo_data: {}
 
 services:
   django: &django
@@ -13,12 +14,11 @@ services:
     container_name: booking_service_local_django
     depends_on:
       - postgres
+      - mongo
 #      - redis
     volumes:
       - .:/app:z
     env_file:
-#      - ./.envs/.local/.django
-#      - ./.envs/.local/.postgres
       - .env
     ports:
       - "8000:8000"
@@ -32,10 +32,19 @@ services:
     container_name: booking_service_local_postgres
     volumes:
       - booking_service_local_postgres_data:/var/lib/postgresql/data
-#      - testcookiecutter_local_postgres_data_backups:/backups
     env_file:
-#      - ./.envs/.local/.postgres
       - .env
+  mongo:
+    build:
+      context: .
+      dockerfile: ./compose/mongo/Dockerfile
+    image: booking_service_mongo
+    container_name: booking_service_local_mongo
+    volumes:
+      - booking_service_local_mongo_data:/data/db
+    env_file:
+      - .env
+
 #  docs:
 #    image: testcookiecutter_local_docs
 #    container_name: testcookiecutter_local_docs
