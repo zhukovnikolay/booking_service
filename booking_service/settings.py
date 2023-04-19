@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djongo',
     'halls',
     'users',
 ]
@@ -88,29 +87,13 @@ DATABASES = {
                 'USER': env('POSTGRES_USER'),
                 'PASSWORD': env('POSTGRES_PASSWORD'),
                 'PORT': env('POSTGRES_PORT'), },
-    'halls_db': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': env('POSTGRES_HOST'),
-        'NAME': env('POSTGRES_DB'),
-        'USER': env('POSTGRES_USER'),
-        'PASSWORD': env('POSTGRES_PASSWORD'),
-        'PORT': env('POSTGRES_PORT'),
-    },
-    'mongo_db': {
-        'ENGINE': 'djongo',
-        'NAME': 'mongo_db',
-        'HOST': env('MONGO_HOST'),
-        'PORT': env('MONGO_PORT'),
-        'USER': env('MONGO_USER'),
-        'PASSWORD': env('MONGO_PASSWORD'),
-    }
-}
 
-DATABASE_APPS_MAPPING = {
-    'properties': 'mongo'
 }
-
-DATABASE_ROUTERS = ['halls.routers.AuthRouter', 'halls.routers.Mongo', ]
+MONGO_DB = env('MONGO_DB')
+MONGO_HOST = env('MONGO_HOST')
+MONGO_PORT = env('MONGO_PORT')
+MONGO_USER = env('MONGO_USER')
+MONGO_PASSWORD = env('MONGO_PASSWORD')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
