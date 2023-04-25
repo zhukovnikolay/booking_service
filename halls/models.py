@@ -24,9 +24,22 @@ class Hall(models.Model):
     moderated = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='halls', null=True, blank=True)
     hall_type = models.ManyToManyField(HallType, related_name='halls', blank=True)
+    view_count = models.IntegerField(default=0)
 
     def __repr__(self):
         return self.name
+    @property
+    def properties(self):
+        return HallProperty.get_hall_properties(hall_id=self.id)
+
+    def delete(self, using=None, keep_parents=False):
+        hall_id = self.id
+        super(Hall, self).delete()
+        HallProperty.delete_hall_record(hall_id=hall_id)
+
+    def increase_view_count(self):
+        self.view_count += 1
+        self.save()
 
 
 class Property(models.Model):
@@ -49,34 +62,56 @@ class Property(models.Model):
         return f'{self.property_name}({self.property_type})'
 
 
-client = pymongo.MongoClient(settings.MONGO_HOST, int(settings.MONGO_PORT))
-db = client[settings.MONGO_DB]
+mongo_client = pymongo.MongoClient(settings.MONGO_HOST, int(settings.MONGO_PORT))
+db = mongo_client[settings.MONGO_DB]
 
 
 class HallProperty(pymongo.collection.Collection):
 
-    def __init__(self, hall_id, **kwargs):
-        super().__init__(database=db, name='hall_properties', **kwargs)
-        self.hall_id = hall_id
-        self.properties = self.find_one({'hall_id': hall_id})
+    def __init__(self, **kwargs):
+        database = db
+        super().__init__(database=database, name='hall_properties', **kwargs)
 
-    def related_properties(self):
-        properties = {}
-        if self.properties is not None:
-            properties = {key: value for key, value in self.properties.items() if key not in ['_id', 'hall_id']}
+    @classmethod
+    def get_hall_properties(cls, hall_id):
+        properties = []
+        hall_property = cls().find_one({'hall_id': hall_id})
+        if hall_property is not None:
+            for key, value in hall_property.items():
+                if key not in ['_id', 'hall_id']:
+                    properties.append({'property_name': key, 'property_value': value})
         return properties
 
     @classmethod
     def insert_properties(cls, hall_id, **kwargs):
         if hall_id is None:
             raise ValueError('Hall ID is required.')
-        hall_property = cls(hall_id)
+        hall_property = cls()
+        if hall_property.find_one({'hall_id': hall_id}) is not None:
+            raise ValueError(f'Hall with hall_id {hall_id} already exists')
         properties = dict(kwargs)
         properties.pop('hall_id', None)  # Remove hall_id from properties
         hall_property.insert_one({'hall_id': hall_id, **properties})
         return hall_property
 
-    def update_properties(self, **kwargs):
+    @classmethod
+    def update_properties(cls, hall_id, **kwargs):
+        hall_property = cls()
         kwargs.pop('hall_id', None)
-        self.update_one(filter={'hall_id': self.hall_id}, update={"$set": {**kwargs}})
-        self.properties = self.find_one({'hall_id': self.hall_id})
+        hall_property.update_one(filter={'hall_id': hall_id}, update={"$set": {**kwargs}})
+
+    @classmethod
+    def delete_hall_record(cls, hall_id):
+        hall_property = cls()
+        hall_property.delete_one(filter={'hall_id': hall_id})
+
+    @classmethod
+    def all_properties(cls):
+        cursor = cls().find({})
+        return [doc for doc in cursor]
+    @classmethod
+    def delete_properties(cls, hall_id, **kwargs):
+        hall_properties = cls()
+        fields_for_delete = {key: "" for key in kwargs.keys()}
+        hall_properties.update_one(filter={"hall_id": hall_id}, update={"$unset": {**fields_for_delete}})
+
