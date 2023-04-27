@@ -5,13 +5,16 @@ Booking service API.
 docker-compose -f local.yml build
 docker-compose -f local.yml up
 ```
-### create superuser
+
+### create superuser to use admin site
+
 ```
  docker-compose -f local.yml run --rm django python manage.py createsuperuser
 ```
-### load hall types
+
+### load reference book data
 ```
- docker-compose -f local.yml run --rm django python manage.py load_hall_type --file internal_files/hall_types.csv
+docker-compose -f local.yml run --rm django ./initial.sh
 ```
 
 ## API
