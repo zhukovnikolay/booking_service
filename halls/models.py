@@ -47,10 +47,9 @@ class Property(models.Model):
     all possible properties and related type
     """
     TYPES = (
-        ('bool', 'bool'),
-        ('string', 'string'),
-        ('int', 'int'),
-        ('float', 'float')
+        ('Boolean', 'bool'),
+        ('String', 'str'),
+        ('Integer', 'int'),
     )
     type = models.ForeignKey(HallType, on_delete=models.CASCADE, related_name='type_properties')
     property_name = models.CharField(max_length=160)
@@ -71,7 +70,7 @@ class HallProperty(pymongo.collection.Collection):
 
     def __init__(self, **kwargs):
         database = db
-        super().__init__(database=database, name='type_properties.csv', **kwargs)
+        super().__init__(database=database, name='hall_properties', **kwargs)
 
     @classmethod
     def get_hall_properties(cls, hall_id):
