@@ -17,6 +17,12 @@ docker-compose -f local.yml up
 docker-compose -f local.yml run --rm django ./initial.sh
 ```
 
+### create test halls
+
+```
+docker-compose -f local.yml run --rm django python manage.py create_halls --hall-count 10
+```
+
 ## API
 ### Docs
 1) http://127.0.0.1:8000/docs/
