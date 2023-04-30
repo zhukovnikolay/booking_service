@@ -16,6 +16,7 @@ class Order(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     ordered_by = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, related_name='orders')
 
+
 class OrderStatus(models.Model):
     order_status_name = models.CharField(max_length=120)
 

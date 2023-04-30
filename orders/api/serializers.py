@@ -14,14 +14,14 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['hall', 'order_from', 'order_till', 'price', 'ordered_by']
+        fields = ['id', 'hall', 'order_from', 'order_till', 'price', 'ordered_by']
 
 
 class OrderStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderStatus
-        fields = ['order_status_name']
+        fields = ['id', 'order_status_name']
 
 
 class OrderHistorySerializer(serializers.ModelSerializer):
@@ -30,4 +30,4 @@ class OrderHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderHistory
-        fields = ['order', 'status', 'start_date', 'end_date']
+        fields = ['id', 'order', 'status', 'start_date', 'end_date']
