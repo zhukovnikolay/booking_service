@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 
-from .serializers import HallTypeSerializer, PropertySerializer, HallCreationSerializer
+from .serializers import HallTypeSerializer, PropertySerializer, HallSerializer
 from halls.models import HallType, Property, Hall, HallProperty
 
 
@@ -21,7 +21,7 @@ class PropertyViewSet(ModelViewSet):
 
 class HallViewSet(ModelViewSet):
     queryset = Hall.objects.all()
-    serializer_class = HallCreationSerializer
+    serializer_class = HallSerializer
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()

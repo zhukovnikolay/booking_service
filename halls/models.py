@@ -1,6 +1,7 @@
 import pymongo
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 from users.models import User
 
@@ -28,9 +29,18 @@ class Hall(models.Model):
 
     def __repr__(self):
         return self.name
+
     @property
     def properties(self):
         return HallProperty.get_hall_properties(hall_id=self.id)
+
+    @property
+    def approved_order_date(self):
+        order_history = []
+        orders = self.order.filter(histories__status__order_status_name='approved')
+        for order in orders:
+            order_history.append({'order_from': order.order_from, 'order_till': order.order_till})
+        return order_history
 
     def delete(self, using=None, keep_parents=False):
         hall_id = self.id

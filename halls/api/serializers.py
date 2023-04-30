@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from halls.models import Hall, HallType, Property, HallProperty
+from orders.api.serializers import OrderSerializer
 
 
 User = get_user_model()
@@ -31,12 +32,12 @@ class HallPropertySerializer(serializers.Serializer):
         fields = ['property_name', 'property_fields']
 
 
-class HallCreationSerializer(serializers.ModelSerializer):
+class HallSerializer(serializers.ModelSerializer):
     properties = serializers.SerializerMethodField()
 
     class Meta:
         model = Hall
-        fields = ['id', 'name', 'descriptions', 'user', 'hall_type', 'view_count', 'properties']
+        fields = ['id', 'name', 'descriptions', 'user', 'hall_type', 'view_count', 'properties', 'approved_order_date']
 
     def get_properties(self, obj):
         serializer = HallPropertySerializer(many=True)
