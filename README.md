@@ -23,6 +23,12 @@ docker-compose -f local.yml run --rm django ./initial.sh
 docker-compose -f local.yml run --rm django python manage.py create_halls --hall-count 10
 ```
 
+### create orders
+
+```
+docker-compose -f local.yml run --rm django python manage.py create_orders
+```
+
 ## API
 ### Docs
 1) http://127.0.0.1:8000/docs/
