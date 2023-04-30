@@ -23,7 +23,7 @@ docker-compose -f local.yml run --rm django ./initial.sh
 docker-compose -f local.yml run --rm django python manage.py create_halls --hall-count 10
 ```
 
-### create orders
+### create orders(if orders did not creat use command a few times)
 
 ```
 docker-compose -f local.yml run --rm django python manage.py create_orders
