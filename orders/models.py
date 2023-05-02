@@ -30,7 +30,7 @@ class OrderStatus(models.Model):
 class OrderHistory(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='histories')
     status = models.ForeignKey(OrderStatus, on_delete=models.SET_NULL, null=True)
-    start_date = models.DateTimeField(auto_now_add=True)
+    start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
@@ -39,5 +39,5 @@ class OrderHistory(models.Model):
             previous_order = OrderHistory.objects.filter(order__id=self.order.id, end_date__isnull=True)
             if previous_order:
                 previous_order.update(end_date=now)
-                self.start_date = now
+        self.start_date = now
         super(OrderHistory, self).save(*args, **kwargs)

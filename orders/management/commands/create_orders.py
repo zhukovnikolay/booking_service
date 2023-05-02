@@ -28,6 +28,5 @@ class Command(BaseCommand):
                                           )
                 order.histories.create(
                     status=random.choice(OrderStatus.objects.filter(~Q(order_status_name__icontains='draft'))),
-                    start_date=order_from
                                        )
                 order_count -= 1
