@@ -1,6 +1,7 @@
 import random
 from datetime import timedelta
 from django.core.management import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 
 from halls.models import Hall
@@ -26,7 +27,7 @@ class Command(BaseCommand):
                                           price=random.random() * random.randint(1000, 3000)
                                           )
                 order.histories.create(
-                    status=random.choice(OrderStatus.objects.all()),
+                    status=random.choice(OrderStatus.objects.filter(~Q(order_status_name__icontains='draft'))),
                     start_date=order_from
                                        )
                 order_count -= 1
