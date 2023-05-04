@@ -40,8 +40,6 @@ services:
       dockerfile: ./compose/mongo/Dockerfile
     image: booking_service_mongo
     container_name: booking_service_local_mongo
-    volumes:
-      - booking_service_local_mongo_data:/data/db
     env_file:
       - .env
 
@@ -61,9 +59,16 @@ services:
 #      - "9000:9000"
 #    command: /start-docs
 #
-#  redis:
-#    image: redis:6
-#    container_name: testcookiecutter_local_redis
+  redis:
+    build:
+      context: .
+      dockerfile: ./compose/redis/Dockerfile
+    image: booking_service_redis
+    container_name: booking_service_local_redis
+    volumes:
+      - booking_service_local_mongo_data:/data/db
+    env_file:
+      - .env
 #
 #  celeryworker:
 #    <<: *django

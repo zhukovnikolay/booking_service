@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         halls = Hall.objects.all()
-        hall_from = random.randint(0, halls.count()-1)
+        hall_from = random.randint(0, halls.count() - 1)
         hall_to = random.randint(hall_from, halls.count()-1)
         halls_to_create_order = halls[hall_from:hall_to]
         for hall in halls_to_create_order:
