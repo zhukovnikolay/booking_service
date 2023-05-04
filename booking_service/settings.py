@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -163,4 +164,15 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Booking service API",
     "DESCRIPTIONS": "Booking service API",
     "VERSION": "1.0.0"
+}
+
+ASGI_APPLICATION = "booking_service.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT'))],
+        },
+    },
 }

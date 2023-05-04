@@ -11,3 +11,7 @@ pymongo~=4.3.3
 djangorestframework==3.14.0
 drf-spectacular
 djangorestframework-simplejwt
+channels[daphne]~=4.0.0
+channels_redis
+
+asgiref~=3.6.0
