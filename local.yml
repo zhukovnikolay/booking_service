@@ -4,6 +4,7 @@ volumes:
   booking_service_local_postgres_data: {}
 #  booking_service_local_postgres_data_backups: {}
   booking_service_local_mongo_data: {}
+  booking_service_local_redis_data: {}
 
 services:
   django: &django
@@ -39,6 +40,8 @@ services:
       context: .
       dockerfile: ./compose/mongo/Dockerfile
     image: booking_service_mongo
+    volumes:
+      - booking_service_local_mongo_data:/data/db
     container_name: booking_service_local_mongo
     env_file:
       - .env
@@ -66,7 +69,7 @@ services:
     image: booking_service_redis
     container_name: booking_service_local_redis
     volumes:
-      - booking_service_local_mongo_data:/data/db
+      - booking_service_local_redis_data:/data/db
     env_file:
       - .env
 #

@@ -9,7 +9,7 @@ class HallAdmin(admin.ModelAdmin):
         'name',
         'descriptions',
         'moderated',
-        'user',
+        'owner',
     ]
 
     filter_horizontal = ('hall_type',)

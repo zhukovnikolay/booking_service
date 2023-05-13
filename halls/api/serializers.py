@@ -51,7 +51,7 @@ class HallSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'descriptions',
-            'user',
+            'owner',
             'hall_type',
             'view_count',
             'area',

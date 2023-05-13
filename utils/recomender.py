@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import requests
 import warnings
 from sklearn.preprocessing import StandardScaler
@@ -7,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 warnings.filterwarnings("ignore")
 
 
-def load_data(method='url', url='http://127.0.0.1:8000/api/hall/', data_dict={}):
+def load_data(method='url', url='http://django:8000/api/hall/', data_dict={}):
     '''
     Загружает данные для рекомендательного модуля.
 
@@ -30,6 +31,9 @@ def load_data(method='url', url='http://127.0.0.1:8000/api/hall/', data_dict={})
         try:
             r = requests.get(url)
             data = pd.DataFrame(r.json()['results'])
+            while r.json()['next']:
+                r = requests.get(r.json()['next'])
+                data = pd.concat([data, pd.DataFrame(r.json()['results'])])
         except:
             print(f'Данные по endpoint {url} получить не удалось')
     elif method == 'dict':
@@ -124,3 +128,4 @@ def recommender(hall_id, data, rec_num=5):
 
     except:
         print('Проблема формирования рекомендаций')
+

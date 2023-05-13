@@ -23,6 +23,7 @@ class HallViewSet(ModelViewSet):
     queryset = Hall.objects.all()
     serializer_class = HallSerializer
 
+
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
         obj.increase_view_count()

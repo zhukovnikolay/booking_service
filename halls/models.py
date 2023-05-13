@@ -27,7 +27,7 @@ class Hall(models.Model):
     name = models.CharField(max_length=160, null=False)
     descriptions = models.TextField()
     moderated = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='halls', null=True, blank=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='halls', null=True, blank=True)
     hall_type = models.ManyToManyField(HallType, related_name='halls', blank=True)
     view_count = models.IntegerField(default=0)
     area = models.DecimalField(max_digits=100, decimal_places=2, null=True,)

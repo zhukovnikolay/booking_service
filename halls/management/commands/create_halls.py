@@ -20,7 +20,7 @@ class Command(BaseCommand):
             hall_types = all_hall_types[hall_type_start:hall_type_end]
             user = all_users[random.randint(0, all_users.count() - 1)]
             hall = Hall.objects.create(
-                user=user,
+                owner=user,
                 name=f'test_hall_{hall_cnt_to_create}',
                 descriptions=f'test_hall_{hall_cnt_to_create}',
                 moderated=random.choice([True, False]),
