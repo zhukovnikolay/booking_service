@@ -11,10 +11,11 @@ User = get_user_model()
 class OrderSerializer(serializers.ModelSerializer):
     hall = serializers.PrimaryKeyRelatedField(queryset=Hall.objects.all())
     ordered_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    current_status = serializers.CharField(required=False)
 
     class Meta:
         model = Order
-        fields = ['id', 'hall', 'order_from', 'order_till', 'price', 'ordered_by']
+        fields = ['id', 'hall', 'order_from', 'order_till', 'price', 'ordered_by', 'current_status']
 
 
 class OrderStatusSerializer(serializers.ModelSerializer):

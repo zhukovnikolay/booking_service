@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 
-from .serializers import HallTypeSerializer, PropertySerializer, HallSerializer
-from halls.models import HallType, Property, Hall, HallProperty
+from .serializers import HallTypeSerializer, PropertySerializer, HallSerializer, HallFavoriteSerializer
+from halls.models import HallType, Property, Hall, HallProperty, HallFavorite
 
 
 class HallTypeViewSet(ModelViewSet):
@@ -60,3 +60,8 @@ class HallViewSet(ModelViewSet):
         if properties:
             HallProperty.delete_properties(hall_id=hall.id, **properties)
             return Response(status=status.HTTP_200_OK)
+
+
+class HallFavoriteViewSet(ModelViewSet):
+    queryset = HallFavorite.objects.all()
+    serializer_class = HallFavoriteSerializer

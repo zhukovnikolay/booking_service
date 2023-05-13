@@ -1,9 +1,13 @@
 import pymongo
 from django.db import models
 from django.conf import settings
-from django.utils import timezone
 
 from users.models import User
+
+
+def hall_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return "hall_{0}/{1}".format(instance.hall.id, filename)
 
 
 class HallType(models.Model):
@@ -26,6 +30,19 @@ class Hall(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='halls', null=True, blank=True)
     hall_type = models.ManyToManyField(HallType, related_name='halls', blank=True)
     view_count = models.IntegerField(default=0)
+    area = models.DecimalField(max_digits=100, decimal_places=2, null=True,)
+    capacity = models.IntegerField(null=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, default=0,)
+    address = models.CharField(max_length=180, null=True,)
+    price = models.IntegerField(null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True,)
+    condition = models.CharField(max_length=180, null=True,)
+    phone = models.CharField(max_length=12, null=True,)
+    site = models.CharField(max_length=100, null=True,)
+    vk = models.CharField(max_length=100, null=True,)
+    telegram = models.CharField(max_length=100, null=True,)
+    whatsapp = models.CharField(max_length=100, null=True,)
 
     def __repr__(self):
         return self.name
@@ -52,6 +69,11 @@ class Hall(models.Model):
         self.save()
 
 
+class HallMedia(models.Model):
+    hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='files',)
+    file = models.FileField(upload_to=hall_directory_path, )
+
+
 class Property(models.Model):
     """
     all possible properties and related type
@@ -70,6 +92,14 @@ class Property(models.Model):
 
     def __str__(self):
         return f'{self.property_name}({self.property_type})'
+
+
+class HallFavorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='favorites')
+
+    def __str__(self):
+        return '{0}: {1}'.format(self.user.username, self.hall.name)
 
 
 mongo_client = pymongo.MongoClient(settings.MONGO_HOST, int(settings.MONGO_PORT))
@@ -119,9 +149,9 @@ class HallProperty(pymongo.collection.Collection):
     def all_properties(cls):
         cursor = cls().find({})
         return [doc for doc in cursor]
+
     @classmethod
     def delete_properties(cls, hall_id, **kwargs):
         hall_properties = cls()
         fields_for_delete = {key: "" for key in kwargs.keys()}
         hall_properties.update_one(filter={"hall_id": hall_id}, update={"$unset": {**fields_for_delete}})
-

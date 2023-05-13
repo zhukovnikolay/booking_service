@@ -12,11 +12,15 @@ User = get_user_model()
 
 
 class Order(models.Model):
-    hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='order')
+    hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='orders')
     order_from = models.DateTimeField()
     order_till = models.DateTimeField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    ordered_by = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, related_name='orders')
+    ordered_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='orders')
+
+    @property
+    def current_status(self):
+        return self.histories.filter(end_date__isnull=True).first().status
 
     def save(self, *args, **kwargs):
         is_update = True if self.pk else False

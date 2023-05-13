@@ -17,6 +17,13 @@ docker-compose -f local.yml up
 docker-compose -f local.yml run --rm django ./initial.sh
 ```
 
+### create test users
+
+```
+ docker-compose -f local.yml run --rm django python manage.py create_users --count 10
+```
+
+
 ### create test halls
 
 ```
