@@ -8,7 +8,7 @@ from halls.api.serializers import HallSerializer
 from halls.models import Hall
 from orders.api.serializers import OrderSerializer
 from users.models import User
-from .serializers import UserSerializer, UserRegisterSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, UserRetrieveSerializer
 from orders.models import Order
 
 
@@ -21,10 +21,12 @@ class UserViewSet(GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMix
         return context
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.action == 'list':
             return UserSerializer
-        if self.request.method == 'POST':
+        if self.action == 'create':
             return UserRegisterSerializer
+        if self.action == 'retrieve':
+            return UserRetrieveSerializer
 
     def perform_create(self, serializer):
         return serializer.save()

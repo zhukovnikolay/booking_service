@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -6,6 +7,24 @@ from halls.api.serializers import HallFavoriteSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'user_agreement',
+            'offer_agreement',
+            'show_phone_number',
+            'phone_number',
+        ]
+
+
+class UserRetrieveSerializer(serializers.ModelSerializer):
     favorites = HallFavoriteSerializer(many=True, required=False)
     email = serializers.EmailField()
 
@@ -30,8 +49,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
-    password1 = serializers.CharField(required=True)
-    password2 = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
 
     class Meta:
         model = User
@@ -39,8 +57,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'email',
-            'password1',
-            'password2',
+            'password',
             'first_name',
             'last_name',
             'user_agreement',
@@ -49,14 +66,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             'phone_number',
         ]
 
-    def validate(self, attrs):
-        if attrs['password1'] != attrs['password2']:
-            return serializers.ValidationError({"password": "Password fields didn't match."})
-        return attrs
-
     def create(self, validated_data):
-        password1 = validated_data.pop('password2')
-        user = User.objects.create(
+        password = validated_data.pop('password')
+        user = User.objects.create_user(
             username=validated_data['username'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
@@ -65,7 +77,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             offer_agreement=validated_data['offer_agreement'],
             show_phone_number=validated_data['show_phone_number'],
             phone_number=validated_data['phone_number'],
+            password=password,
         )
-        user.set_password(password1)
-        print(user.username)
         return user
