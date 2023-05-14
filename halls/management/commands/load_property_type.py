@@ -25,7 +25,7 @@ class Command(BaseCommand):
                     self.stdout.write(f'hall type with name {type_name} does not exist')
                     continue
                 type_property = Property.objects.create(
-                    type=hall_type,
+                    hall_type=hall_type,
                     property_name=property_name,
                     property_type=property_type
                 )

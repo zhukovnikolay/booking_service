@@ -83,7 +83,7 @@ class Property(models.Model):
         ('String', 'str'),
         ('Integer', 'int'),
     )
-    type = models.ForeignKey(HallType, on_delete=models.CASCADE, related_name='type_properties')
+    hall_type = models.ForeignKey(HallType, on_delete=models.CASCADE, related_name='type_properties')
     property_name = models.CharField(max_length=160)
     property_type = models.CharField(choices=TYPES, max_length=20)
 

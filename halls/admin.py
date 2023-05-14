@@ -22,4 +22,4 @@ class HallTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Property)
 class HallPropertyConferenceRoomAdmin(admin.ModelAdmin):
-    list_display = ['type', 'property_name', 'property_type' ,]
+    list_display = ['hall_type', 'property_name', 'property_type' ,]

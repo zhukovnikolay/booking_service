@@ -16,11 +16,11 @@ class HallTypeSerializer(serializers.ModelSerializer):
 
 
 class PropertySerializer(serializers.ModelSerializer):
-    type = serializers.PrimaryKeyRelatedField(many=False, queryset=HallType.objects.all(), allow_null=False)
+    hall_type = serializers.PrimaryKeyRelatedField(many=False, queryset=HallType.objects.all(), allow_null=False)
 
     class Meta:
         model = Property
-        fields = ['id', 'property_name', 'property_type', 'type']
+        fields = ['id', 'property_name', 'property_type', 'hall_type']
 
 
 class HallPropertySerializer(serializers.Serializer):
@@ -43,7 +43,6 @@ class HallMediaSerializer(serializers.ModelSerializer):
 class HallSerializer(serializers.ModelSerializer):
     properties = serializers.SerializerMethodField(required=False)
     media = serializers.SerializerMethodField(required=False)
-    # media = HallMediaSerializer(many=True, required=False)
 
     class Meta:
         model = Hall
