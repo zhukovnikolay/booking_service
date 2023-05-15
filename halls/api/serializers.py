@@ -37,12 +37,13 @@ class HallMediaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HallMedia
-        fields = ['id', 'hall', 'file']
+        fields = ['id', 'hall', 'file', 'is_avatar']
 
 
 class HallSerializer(serializers.ModelSerializer):
     properties = serializers.SerializerMethodField(required=False)
     media = serializers.SerializerMethodField(required=False)
+    avatar = serializers.SerializerMethodField(required=False,)
 
     class Meta:
         model = Hall
@@ -68,6 +69,7 @@ class HallSerializer(serializers.ModelSerializer):
             'whatsapp',
             'properties',
             'approved_order_date',
+            'avatar',
             'media',
         ]
 
@@ -81,18 +83,27 @@ class HallSerializer(serializers.ModelSerializer):
 
     def get_media(self, obj):
         serializer = HallMediaSerializer(many=True)
-        print(self.context['request'].data)
         if self.context['request'].method in ['POST', 'PATCH', 'PUT']:
             hall_media = json.loads(self.context['request'].data.get('hall_media', '[]'))
         if self.context['request'].method == 'GET':
-            hall_media = obj.files.all()
+            hall_media = obj.files.filter(is_avatar=False)
         return serializer.to_representation(hall_media)
 
+    def get_avatar(self, obj):
+        serializer = HallMediaSerializer(many=False, allow_null=True)
+        if self.context['request'].method in ['POST', 'PATCH', 'PUT']:
+            avatar = json.loads(self.context['request'].data.get('avatar', ''))
+        if self.context['request'].method == 'GET':
+            avatar = obj.files.filter(is_avatar=True).first()
+            if avatar is None:
+                return None
+        return serializer.to_representation(avatar)
+
     def create(self, validated_data):
-        print(validated_data)
         properties = json.loads(self.context['request'].data.get('properties', '[]'))
         hall_type = validated_data.pop('hall_type', None)
         hall_medias = validated_data.pop('media', None)
+        avatar = validated_data.pop('avatar', None)
 
         hall = Hall.objects.create(**validated_data)
         if hall_type:
@@ -102,13 +113,17 @@ class HallSerializer(serializers.ModelSerializer):
 
         if hall_medias:
             for media in hall_medias:
-                HallMedia.objects.create(hall=hall, file=media)
+                HallMedia.objects.create(hall=hall, file=media,)
+        if avatar:
+            HallMedia.objects.create(hall=hall, file=avatar, is_avatar=True)
         return hall
 
     def to_internal_value(self, data):
         internal_value = super(HallSerializer, self).to_internal_value(data)
         media = data.getlist('media')
+        avatar = data.get('avatar')
         internal_value.update({'media': media})
+        internal_value.update({'avatar': avatar})
         return internal_value
 
 

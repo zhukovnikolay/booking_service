@@ -72,6 +72,7 @@ class Hall(models.Model):
 class HallMedia(models.Model):
     hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='files',)
     file = models.FileField(upload_to=hall_directory_path, )
+    is_avatar = models.BooleanField(default=False)
 
 
 class Property(models.Model):
