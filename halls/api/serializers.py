@@ -4,9 +4,16 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 
-from halls.models import Hall, HallType, Property, HallProperty, HallMedia, HallFavorite
+from halls.models import Hall, HallType, Property, HallProperty, HallMedia, HallFavorite, EventType
 
 User = get_user_model()
+
+
+class EventTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EventType
+        fields = ['id', 'event_type_name']
 
 
 class HallTypeSerializer(serializers.ModelSerializer):
@@ -71,6 +78,7 @@ class HallSerializer(serializers.ModelSerializer):
             'approved_order_date',
             'avatar',
             'media',
+            'event_type'
         ]
 
     def get_properties(self, obj):
@@ -90,9 +98,13 @@ class HallSerializer(serializers.ModelSerializer):
         return serializer.to_representation(hall_media)
 
     def get_avatar(self, obj):
-        serializer = HallMediaSerializer(many=False, allow_null=True)
+        serializer = HallMediaSerializer(many=False)
+        print(self.context['request'].method)
         if self.context['request'].method in ['POST', 'PATCH', 'PUT']:
-            avatar = json.loads(self.context['request'].data.get('avatar', ''))
+            avatar = self.context['request'].data.get('avatar')
+            if avatar is None:
+                return None
+            return json.loads(avatar)
         if self.context['request'].method == 'GET':
             avatar = obj.files.filter(is_avatar=True).first()
             if avatar is None:
@@ -102,12 +114,16 @@ class HallSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         properties = json.loads(self.context['request'].data.get('properties', '[]'))
         hall_type = validated_data.pop('hall_type', None)
+        event_type = validated_data.pop('event_type', None)
         hall_medias = validated_data.pop('media', None)
         avatar = validated_data.pop('avatar', None)
 
         hall = Hall.objects.create(**validated_data)
         if hall_type:
             hall.hall_type.set(hall_type)
+
+        if event_type:
+            hall.event_type.set(event_type)
         hall_properties = {values['property_name']: values['property_value'] for values in properties}
         HallProperty.insert_properties(hall_id=hall.id, **hall_properties)
 

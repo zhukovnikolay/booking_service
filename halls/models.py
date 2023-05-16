@@ -10,6 +10,13 @@ def hall_directory_path(instance, filename):
     return "hall_{0}/{1}".format(instance.hall.id, filename)
 
 
+class EventType(models.Model):
+    event_type_name = models.CharField(max_length=120)
+
+    def __str__(self):
+        return self.event_type_name
+
+
 class HallType(models.Model):
     type_name = models.CharField(max_length=120)
 
@@ -43,6 +50,7 @@ class Hall(models.Model):
     vk = models.CharField(max_length=100, null=True,)
     telegram = models.CharField(max_length=100, null=True,)
     whatsapp = models.CharField(max_length=100, null=True,)
+    event_type = models.ManyToManyField(EventType, related_name='halls', blank=True)
 
     def __repr__(self):
         return self.name

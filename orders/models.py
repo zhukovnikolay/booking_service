@@ -73,7 +73,6 @@ class OrderHistory(models.Model):
     end_date = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
-        # print('call save')
         now = datetime.datetime.now(tz=datetime.timezone.utc)
         if not self.pk:
             previous_order = OrderHistory.objects.filter(order__id=self.order.id, end_date__isnull=True)

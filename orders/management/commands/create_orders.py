@@ -17,8 +17,8 @@ class Command(BaseCommand):
         hall_to = random.randint(hall_from, halls.count()-1)
         halls_to_create_order = halls[hall_from:hall_to]
         for hall in halls_to_create_order:
-            if hall.user:
-                user = random.choice(User.objects.exclude(id=hall.user.pk))
+            if hall.owner:
+                user = random.choice(User.objects.exclude(id=hall.owner.pk))
             else:
                 user = None
             order_count = random.randint(0, 10)

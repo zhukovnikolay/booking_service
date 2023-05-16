@@ -1,7 +1,7 @@
 import random
 from django.core.management import BaseCommand, CommandError
 
-from halls.models import Hall, HallType, HallProperty
+from halls.models import Hall, HallType, HallProperty, EventType
 from users.models import User
 
 
@@ -14,10 +14,15 @@ class Command(BaseCommand):
         hall_cnt_to_create = options['hall_count']
         all_hall_types = HallType.objects.all()
         all_users = User.objects.all()
+        all_events = EventType.objects.all()
         while hall_cnt_to_create:
             hall_type_start = random.randint(0, all_hall_types.count() - 2)
             hall_type_end = random.randint(hall_type_start + 1, all_hall_types.count() - 1)
+            event_type_start = random.randint(0, all_events.count() -2)
+            event_type_end = random.randint(event_type_start + 1, all_events.count() - 1)
+
             hall_types = all_hall_types[hall_type_start:hall_type_end]
+            event_types = all_events[event_type_start:event_type_end]
             user = all_users[random.randint(0, all_users.count() - 1)]
             hall = Hall.objects.create(
                 owner=user,
@@ -33,6 +38,7 @@ class Command(BaseCommand):
                 phone=int(random.random() * 1000000000000),
             )
             hall.hall_type.add(*hall_types)
+            hall.event_type.add(*event_types)
             hall_cnt_to_create -= 1
             new_property = {}
             for hall_type in hall_types:

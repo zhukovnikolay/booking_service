@@ -6,3 +6,6 @@ python manage.py load_property_type --file internal_files/type_properties.csv
 
 # load order status
 python manage.py load_order_status --file internal_files/order_status.csv
+
+# load event types
+python manage.py load_event_type --file internal_files/event_type.csv

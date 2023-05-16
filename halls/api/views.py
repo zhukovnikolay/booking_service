@@ -1,12 +1,14 @@
 import json
 
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 
-from .serializers import HallTypeSerializer, PropertySerializer, HallSerializer, HallFavoriteSerializer
-from halls.models import HallType, Property, Hall, HallProperty, HallFavorite
+from orders.api.serializers import OrderSerializer
+from .serializers import HallTypeSerializer, PropertySerializer, HallSerializer, HallFavoriteSerializer, EventTypeSerializer
+from halls.models import HallType, Property, Hall, HallProperty, HallFavorite, EventType
 
 
 class HallTypeViewSet(ModelViewSet):
@@ -22,7 +24,6 @@ class PropertyViewSet(ModelViewSet):
 class HallViewSet(ModelViewSet):
     queryset = Hall.objects.all()
     serializer_class = HallSerializer
-
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -62,7 +63,20 @@ class HallViewSet(ModelViewSet):
             HallProperty.delete_properties(hall_id=hall.id, **properties)
             return Response(status=status.HTTP_200_OK)
 
+    @extend_schema(responses=OrderSerializer(many=True))
+    @action(methods=['get'], detail=True, url_path='order-date')
+    def ordered(self, request, pk=None):
+        obj = self.get_object()
+        approved_orders = obj.orders.prefetch_related('histories').filter(histories__status__order_status_name='approved')
+        serializer = OrderSerializer(instance=approved_orders, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
 
 class HallFavoriteViewSet(ModelViewSet):
     queryset = HallFavorite.objects.all()
     serializer_class = HallFavoriteSerializer
+
+
+class EventTypeViewSet(ModelViewSet):
+    queryset = EventType.objects.all()
+    serializer_class = EventTypeSerializer
