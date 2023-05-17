@@ -5,6 +5,14 @@ from django.conf import settings
 from users.models import User
 
 
+class AllManyToManyQuerySet(models.QuerySet):
+    def filter_all_many_to_many(self, attribute, *args):
+        qs = self
+        for arg in args:
+            qs = qs.filter(**{attribute: arg})
+        return qs
+
+
 def hall_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return "hall_{0}/{1}".format(instance.hall.id, filename)
@@ -51,6 +59,8 @@ class Hall(models.Model):
     telegram = models.CharField(max_length=100, null=True,)
     whatsapp = models.CharField(max_length=100, null=True,)
     event_type = models.ManyToManyField(EventType, related_name='halls', blank=True)
+
+    objects = AllManyToManyQuerySet.as_manager()
 
     def __repr__(self):
         return self.name

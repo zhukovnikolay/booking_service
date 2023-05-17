@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import requests
 import warnings
 from sklearn.preprocessing import StandardScaler
@@ -45,7 +44,8 @@ def load_data(method='url', url='http://django:8000/api/hall/', data_dict={}):
         print('Выбран некорректный метод загрузки данных. Корректные: url или dict')
 
     try:
-        data['hall_type'] = data['hall_type'].astype('string')
+
+        data['hall_type'] = data['hall_type'].apply(lambda x: sorted(x)).astype('string')
         return data
     except:
         print('Проблема с признаком hall_type, возможно, он отсутствует')
@@ -65,6 +65,8 @@ def choose_data(hall_id, all_data):
             data(pd.DataFrame): возвращает pandas-датафрейм, содержащий только площадки нужного типа.
     '''
     temp_data = all_data[all_data.hall_type == all_data.query('id == @hall_id')['hall_type'].values[0]].copy()
+    if len(temp_data.iloc[0].properties) == 0:
+        return temp_data
     try:
         temp_dict = {key.get('property_name'): [] for key in temp_data.iloc[0].properties}
         for row in temp_data.properties:
@@ -99,11 +101,18 @@ def recommender(hall_id, data, rec_num=5):
         # отбираем только площадки того же типа
         test_data = choose_data(hall_id, data)
         # отбираем числовые поля
-        numeric_columns = test_data.select_dtypes(include='number').columns
-        features = test_data[numeric_columns]
-        features.drop(columns=['id'], inplace=True)
-        features.fillna(features.median(), inplace=True)
+        feats_list = ["area", "capacity", "rating", "price", "longitude", "latitude"]
+        features = test_data[feats_list]
+        #        numeric_columns = test_data.select_dtypes(include='number').columns
+        #        features = test_data[numeric_columns]
+        #        features.drop(columns=['id'], inplace=True)
+        for feat in feats_list:
+            if len(features[feat].isna()) == len(features[feat]):
+                features.fillna(0, inplace=True)
+            else:
+                features[feat].fillna(features[feat].median(), inplace=True)
         columns = features.columns
+
         # нормализуем данные
         scaler = StandardScaler()
         features = pd.DataFrame(scaler.fit_transform(features), columns=columns)
@@ -111,13 +120,13 @@ def recommender(hall_id, data, rec_num=5):
         # задаем веса
         # numeric_weights = {}
 
-        # вычисляем сходство между товарами на основе числовых признаков
+        # вычисляем сходство между площадками на основе числовых признаков
         similarities = cosine_similarity(features)
 
-        #
+        # формируем список рекомендаций
         all_similarities = []
         for i, row in test_data.iterrows():
-            # выбор похожих товаров для каждого товара + исключаем сам товар
+            # выбор похожих площадками для каждого товара + исключаем саму площадки
             similar_indices = similarities[i].argsort()[::-1][1:]
             similar_ids = [test_data.iloc[idx]['id'] for idx in similar_indices]
             all_similarities.append(similar_ids[:rec_num])

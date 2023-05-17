@@ -48,9 +48,10 @@ class HallMediaSerializer(serializers.ModelSerializer):
 
 
 class HallSerializer(serializers.ModelSerializer):
-    properties = serializers.SerializerMethodField(required=False)
-    media = serializers.SerializerMethodField(required=False)
+    properties = serializers.SerializerMethodField(required=False,)
+    media = serializers.SerializerMethodField(required=False,)
     avatar = serializers.SerializerMethodField(required=False,)
+    recommendations = serializers.ListField(read_only=True,)
 
     class Meta:
         model = Hall
@@ -78,7 +79,8 @@ class HallSerializer(serializers.ModelSerializer):
             'approved_order_date',
             'avatar',
             'media',
-            'event_type'
+            'event_type',
+            'recommendations',
         ]
 
     def get_properties(self, obj):
@@ -99,7 +101,6 @@ class HallSerializer(serializers.ModelSerializer):
 
     def get_avatar(self, obj):
         serializer = HallMediaSerializer(many=False)
-        print(self.context['request'].method)
         if self.context['request'].method in ['POST', 'PATCH', 'PUT']:
             avatar = self.context['request'].data.get('avatar')
             if avatar is None:
@@ -149,4 +150,4 @@ class HallFavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HallFavorite
-        fields = ['id', 'user', 'hall',]
+        fields = ['id', 'user', 'hall', ]

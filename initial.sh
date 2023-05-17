@@ -9,3 +9,6 @@ python manage.py load_order_status --file internal_files/order_status.csv
 
 # load event types
 python manage.py load_event_type --file internal_files/event_type.csv
+
+# load interests
+python manage.py load_interests --file internal_files/user_interests.csv
