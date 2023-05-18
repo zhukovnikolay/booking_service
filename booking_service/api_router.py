@@ -1,6 +1,7 @@
 from django.conf import settings
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
+from comments.api.views import CommentViewSet
 from halls.api.views import HallTypeViewSet, PropertyViewSet, HallViewSet, HallFavoriteViewSet, EventTypeViewSet
 from orders.api.views import OrderView, OrderStatusView, OrderHistoryView
 from users.api.views import UserViewSet
@@ -19,4 +20,5 @@ router.register('order-history', OrderHistoryView)
 router.register('favorite', HallFavoriteViewSet)
 router.register('user', UserViewSet)
 router.register('event', EventTypeViewSet)
+router.register('comment', CommentViewSet)
 urlpatterns = router.urls
