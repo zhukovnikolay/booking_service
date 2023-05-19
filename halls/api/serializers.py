@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-
+from comments.api.serializers import CommentSerializer
 from halls.models import Hall, HallType, Property, HallProperty, HallMedia, HallFavorite, EventType
 
 User = get_user_model()
@@ -52,6 +52,7 @@ class HallSerializer(serializers.ModelSerializer):
     media = serializers.SerializerMethodField(required=False,)
     avatar = serializers.SerializerMethodField(required=False,)
     recommendations = serializers.ListField(read_only=True,)
+    comments = CommentSerializer(many=True)
 
     class Meta:
         model = Hall
@@ -81,6 +82,7 @@ class HallSerializer(serializers.ModelSerializer):
             'media',
             'event_type',
             'recommendations',
+            'comments',
         ]
 
     def get_properties(self, obj):
