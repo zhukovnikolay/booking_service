@@ -87,14 +87,27 @@ class HallViewSet(ModelViewSet):
         return response
 
     def retrieve(self, request, *args, **kwargs):
-        obj = self.get_object()
-        obj.increase_view_count()
+        user = request.user
+        hall = self.get_object()
+        hall.increase_view_count()
         # ToDo need to store data about all halls in cache
         data = recomender.load_data()
-        recommendations = recomender.recommender(obj.id, data)
-        serializer = HallSerializer(obj, many=False, context=self.get_serializer_context())
+        recommendations = recomender.recommender(hall.id, data)
+        serializer = HallSerializer(hall, many=False, context=self.get_serializer_context())
         serializer_data = serializer.data
         serializer_data.update({'recommendations': recommendations})
+        can_make_comment = False
+        if user.is_authenticated:
+            user_orders = user.orders.filter(hall=hall)
+            if user_orders.count() > 0:
+                is_order_finished = user.orders.prefetch_related('histories').filter(
+                    hall=hall,
+                    histories__status__order_status_name='finished',
+                    histories__end_date__isnull=True
+                ).count()
+                if is_order_finished > 0:
+                    can_make_comment = True
+        serializer_data.update({'canComment': can_make_comment})
         return Response(serializer_data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
