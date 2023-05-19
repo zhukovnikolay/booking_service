@@ -14,6 +14,7 @@ from orders.models import OrderHistory
 from .serializers import HallTypeSerializer, PropertySerializer, HallSerializer, HallFavoriteSerializer, \
     EventTypeSerializer
 from halls.models import HallType, Property, Hall, HallProperty, HallFavorite, EventType
+from halls.api.permisions import IsOwnerOrAdminOrReadOnly
 from utils import recomender
 
 
@@ -30,6 +31,7 @@ class PropertyViewSet(ModelViewSet):
 class HallViewSet(ModelViewSet):
     queryset = Hall.objects.all()
     serializer_class = HallSerializer
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
 
     def get_queryset(self):
         queryset = Hall.objects.all()
@@ -110,15 +112,16 @@ class HallViewSet(ModelViewSet):
         serializer_data.update({'canComment': can_make_comment})
         return Response(serializer_data, status=status.HTTP_200_OK)
 
+    @extend_schema(responses=HallSerializer, request=HallSerializer)
     def create(self, request, *args, **kwargs):
+        print(request.user)
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        request.data._mutable = True
-        data = request.data
+        data = request.data.copy()
         properties = data.get('properties', None)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()

@@ -52,7 +52,7 @@ class HallSerializer(serializers.ModelSerializer):
     media = serializers.SerializerMethodField(required=False,)
     avatar = serializers.SerializerMethodField(required=False,)
     recommendations = serializers.ListField(read_only=True,)
-    comments = CommentSerializer(many=True)
+    comments = CommentSerializer(many=True, read_only=True,)
 
     class Meta:
         model = Hall
@@ -131,6 +131,7 @@ class HallSerializer(serializers.ModelSerializer):
         HallProperty.insert_properties(hall_id=hall.id, **hall_properties)
 
         if hall_medias:
+            print(hall_medias)
             for media in hall_medias:
                 HallMedia.objects.create(hall=hall, file=media,)
         if avatar:
@@ -139,8 +140,9 @@ class HallSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         internal_value = super(HallSerializer, self).to_internal_value(data)
-        media = data.getlist('media')
-        avatar = data.get('avatar')
+        print(data)
+        media = data.getlist('media', None)
+        avatar = data.get('avatar', None)
         internal_value.update({'media': media})
         internal_value.update({'avatar': avatar})
         return internal_value
